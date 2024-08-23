@@ -1,0 +1,86 @@
+https://ja.vuejs.org/guide/essentials/template-syntax.html#directives
+
+
+
+🟡ディレクティブ
+ディレクティブの属性値は、JSの単一の式(例外あり)。
+⇒式が示す値が変化したとき、リアクティブ（自動的に応答し、変化に従って自身を更新する）に更新をDOMに適用できる。
+
+
+
+🔵引数
+一部のディレクティブは引数を取ることができる。（「:」のあとに書く）
+
+例）href属性をurlという式の値にバインドする
+<a v-bind:href="url"> ... </a>　（<a :href="url"> ... </a>）
+
+🟢動的引数
+引数をJS式で指定することもできる。
+
+ー　使用例
+<a v-bind:[attributeName]="url"> ... </a>　（<a :[attributeName]="url"> ... </a>）
+コンポーネントのインスタンスがattributeNameというデータプロパティを持ち、その値が"href"としたら、このバインディングはv-bind:hrefになる。
+
+ー　値の制約​
+動的引数はnullか文字列のいずれか。
+※nullの場合は、バインディングが削除される。
+
+ー　使えるJS構文の制約​
+スペースや引用符など特定の文字はHTMLの属性名の中では無効となるため使用できない。
+
+例）NG
+<a :['foo' + bar]="value"> ... </a>
+
+ー　バインドキー名（❗単一ファイルコンポーネント内のテンプレートではこの制約はない。）
+HTMLファイルに直接記述するDOM内テンプレートを使用する場合、
+ブラウザーでは属性名が小文字であることが求められるため、以下のように大文字のキー名を使用することは避ける。
+
+<a :[someAttr]="value"> ... </a>
+これは:[someattr] に変換される。
+⇒コンポーネントに「someattr」ではなく「someAttr」というプロパティしかなければ、このコードは動作しない。
+
+
+
+🔵修飾子
+ディレクティブのバインド方法を指定する。
+
+例）<form v-on:submit.prevent="onSubmit">...</form>
+
+ー　v-onの修飾子
+https://ja.vuejs.org/guide/essentials/event-handling#event-modifiers
+
+ー　v-modelの修飾子
+https://ja.vuejs.org/guide/essentials/forms#modifiers
+
+
+
+🔵v-bind
+バインドされた値が null または undefined の場合、その属性はレンダリングされる要素から除外されます。
+
+
+同名省略記法 ​
+バインドされている JavaScript の値と属性が同じ名前を持っている場合、属性値を省略するために構文をさらに短くすることができます:
+
+<!-- :id="id" と同じ -->
+<div :id></div>
+<!-- 同じように動きます -->
+<div v-bind:id></div>
+これは、JavaScript でオブジェクトを宣言するときのプロパティ省略記法に似ています。この機能は Vue 3.4 以上でのみ使用できます。
+
+
+
+通常は、null または undefined の場合には、属性が要素から取り除かれるが、
+ブーリアン属性の場合には、偽の場合に属性が要素から取り除かれる。
+
+例）disabled属性
+<button :disabled="isButtonDisabled">Button</button>
+この disabled という属性は、isButtonDisabled が 真(空文字も含む) である場合に要素に含まれます。
+
+
+バインドできるのは、文字列や数値だけではなく、以下のようなオブジェクトも可能
+⇒objectOfAttrs.idでアクセスできる
+
+const objectOfAttrs = {
+  id: 'container',
+  class: 'wrapper'
+}

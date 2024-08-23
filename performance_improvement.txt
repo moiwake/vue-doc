@@ -1,0 +1,51 @@
+Nuxtがデフォルトで提供しているパフォーマンス向上機能
+
+
+🟡コードスプリッティング
+全コードを必要な部分ごとに分割し、ユーザーがその部分を必要とする時にのみロードする。
+
+Nuxtは自動的にコードスプリッティング（コード分割）を行う。
+⇒　ページの読み込み速度を大幅に改善することができる。
+
+ー　ページベースのスプリッティング
+pagesディレクトリ内の各「.vue」ファイルを基に、自動的にVueルーターの設定を生成する。
+この過程で、各ページコンポーネントに対して個別のJavaScriptバンドルが作成される。
+⇒　ユーザーが特定のページにアクセスしたときにのみ、そのページのコードがロードされる。
+
+ー　非同期コンポーネント
+Vueコンポーネントを動的にインポートすることで、コンポーネントのコードも分割して遅延ロードすることができる。
+
+例）非同期コンポーネント：ボタンをクリックしたタイミングでLargeComponent.vueが動的にロードされる。
+<template>
+  <div>
+    <button @click="loadComponent">Load More</button>
+    <AsyncComponent v-if="showComponent" />
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      showComponent: false,
+      AsyncComponent: null,
+    };
+  },
+  methods: {
+    async loadComponent() {
+      if (!this.showComponent) {
+        this.AsyncComponent = () => import('./components/LargeComponent.vue');
+        this.showComponent = true;
+      }
+    }
+  }
+}
+</script>
+
+
+
+
+
+🟡ツリーシェイキング機能（Tree Shaking）
+ Nuxtのデフォルト機能で、使用されていないコードを最終的なファイル（バンドル）から取り除く。
+⇒　ロード時間を短縮できる。（Webpack、Rollupなどでサポート）

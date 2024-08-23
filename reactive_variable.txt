@@ -1,0 +1,180 @@
+https://ja.vuejs.org/guide/essentials/reactivity-fundamentals.html
+
+
+
+🟡リアクティブ
+
+リアクティブ...中身が変更されると、自動的に変更が検知されて、DOMが更新される。
+
+
+
+🔵プリミティブ型のデータをリアクティブにする
+
+🟢ref()
+ref()でラップした値は、変更を検知できるリアクティブな状態になる。
+
+🟢refオブジェクトへのアクセス
+valueプロパティ
+
+例）
+<script setup>
+import { ref } from 'vue'　　refのAPIをインポート
+
+const count = ref(0)　　refでラップ
+
+function increment() {　　refオブジェクトを変更する関数の宣言
+  count.value++　　refオブジェクトにアクセス
+}
+</script>
+
+<template>
+  <button @click="increment">
+    {{ count }}
+  </button>
+</template>
+
+
+
+🔵refのトラッキング
+
+🟢ネストしたデータもトラッキングできる
+ネストしたオブジェクトや配列を変更した場合でも、変更が検出される。
+
+例）
+import { ref } from 'vue'
+
+const obj = ref({
+  nested: { count: 0 },
+  arr: ['foo', 'bar']
+})
+
+function mutateDeeply() {
+  obj.value.nested.count++　　変更が検知できる
+  obj.value.arr.push('baz')
+}
+
+🟢トラッキングを浅くする
+shallowRef...valueプロパティまでしかトラッキングしない。
+
+例）
+import { shallowRef } from 'vue';
+
+const myObject = shallowRef({
+  prop1: 'value1',
+  prop2: 'value2',
+});
+
+console.log(myObject.value.prop1); prop1やprop2の値が変更されても、検知されない
+
+⇒大きなオブジェクトとき、全体のオブジェクトをトラッキングせずに特定のプロパティだけに注目したい場合や、外部ライブラリで内部の状態を管理する場合に利用される。
+⇒パフォーマンスを向上させつつ、必要な部分だけをリアクティブにすることができる。
+
+
+
+🔵DOM更新のタイミング
+リアクティブな変数に変化があったときのDOM更新は、同期的に行われない。
+
+１．コンポーネント内で何らかの変更がある。（例: dataやrefの変更）。
+２．この状態変更がVueによって「Next tick」までバッファリングされる。
+３．現在のJavaScript実行コンテキストが終了し、次のJavaScript実行コンテキストが開始される。
+４．「Next tick」が始まり、バッファリングされた状態の変更がDOMに適用される。
+
+ー　Next tick
+非同期処理の概念であり、現在のJavaScript実行コンテキストが終了して新しい実行コンテキストが開始されるタイミングを指す。
+
+ー　JavaScript実行コンテキスト
+JavaScriptコードが実行される独立した環境やスコープの単位を指す。
+
+JavaScriptは、実行コンテキスト内でコードを実行し、変数、関数、オブジェクトなどの情報を保持する。
+JavaScriptは実行コンテキストを使用して変数や関数へのアクセスを解決し、スコープチェーンを通じて変数の参照を見つけることができる。
+実行コンテキストはスタック（コールスタック）として管理され、関数の呼び出しや戻りなどがスタック上で積み重ねられる。
+
+主に以下の２種類
+・グローバル実行コンテキスト
+スクリプト全体を包括する最上位の実行コンテキスト。
+ウェブページが読み込まれたときにグローバル実行コンテキストが生成され、その中でグローバル変数や関数が宣言される。
+※ブラウザ環境ではwindowオブジェクト
+
+・関数実行コンテキスト
+関数が呼び出されるたびに生成される実行コンテキスト。
+関数内で宣言された変数や引数、関数自体がこの実行コンテキスト内で管理される。
+関数が呼び出されるたびに新しい関数実行コンテキストが作られ、関数の実行が終了するとその実行コンテキストは削除される。
+
+例）
+var globalVariable = 10;　　グローバル実行コンテキスト
+
+function exampleFunction() {　　関数実行コンテキスト
+  var localVariable = 5;
+  console.log(globalVariable + localVariable);
+}
+
+exampleFunction(); 　　関数が呼び出され、新しい関数実行コンテキストがスタックに追加される⇒localVariableやglobalVariableへのアクセスが可能にな
+
+
+
+🔵DOMの更新を待つ
+nextTick()
+コンポーネント内でのリアクティブな変数の状態の変更をした後に、nextTickを使用することで、
+DOM更新のタイミングを確実にできる。
+
+import { ref, nextTick } from 'vue';
+
+async function increment() {
+  count.value++; // リアクティブな状態を変更
+
+  // nextTickを使用してDOMの更新を待つ
+  await nextTick();
+
+  // この時点でDOMが更新されています
+  console.log('DOM updated');
+}
+
+
+
+🔵オブジェクトをリアクティブにする
+
+🟢reactive()
+reactive()でラップしたオブジェクトは、全体がリアクティブになる。
+
+❗オブジェクト型 (オブジェクト、配列、Map・Setなどのコレクション型) にのみ使用可能
+
+🟢reactiveオブジェクトへのアクセス
+通常のオブジェクトへのアクセスと同じにようにアクセスできる。
+
+例）
+<script setup>
+import { reactive } from 'vue'　　reactiveのAPIをインポート
+
+const state = reactive({ count: 0 })  reactiveでラップ
+</script>
+
+<template>
+  <button @click="state.count++">
+　  {{ state.count }}　　reactiveオブジェクトにアクセス
+  </button>
+</template>
+
+🟢ネストしたデータ
+refと同様にネストしたデータもトラッキングできる。
+また、reactiveもshallowReactive()でトラッキングを浅くすることができる。
+
+
+
+❗ラッピングしたオブジェクト自体がリアクティブになったわけではない
+
+ref・reactiveともに、ラッピング前のオブジェクトとは別物のオブジェクトを返している。
+
+const rawObject = {};
+const reactiveObject = reactive(rawObject);
+
+console.log(reactiveObject === rawObject); // false　
+
+🟢注意点
+
+ー　オブジェクト全体は置換できない
+リアクティブオブジェクトに対するトレッキングは、プロパティにアクセスしたときのみが対象になる。
+⇒オブジェクト自体を置き換えると、置換前のオブジェクトに対するトラッキングはなくなる。
+
+let state = reactive({ count: 0 })
+state = reactive({ count: 1 })　　{ count: 0 }）は、追跡されなくなる
+

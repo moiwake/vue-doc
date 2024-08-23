@@ -1,0 +1,96 @@
+https://ja.vuejs.org/guide/essentials/template-syntax.html
+
+
+
+🔵JS構文の使用
+
+テンプレート内でも、以下の場所ではJSコードが記述できる。
+
+🟢記述できる場所
+・テキスト展開の中(マスタッシュ構文内：{{ }})
+・ディレクティブ (「v-〇〇」の属性) の属性値の中
+
+例）
+{{ ok ? 'YES' : 'NO' }}
+
+{{ message.split('').reverse().join('') }}
+
+<div :id="`list-${id}`"></div>
+
+🟢記述できるコード
+単一の式と、関数の呼び出しのみ
+
+ー　単一の式
+例）NG
+これは文であり、式ではない
+{{ var a = 1 }}
+
+フロー制御も動作しない。代わりに三項演算子を使用する。
+{{ if (ok) { return message } }}
+
+ー　関数の呼び出し
+コンポーネントで定義した関数なら呼び出しができる。
+
+❗バインディングの式で呼び出される関数は、コンポーネントが更新されるたびに呼び出される。
+⇒データの変更や非同期処理をトリガーするような副作用を持たせてはいけない。
+
+
+
+🔵グローバルオブジェクトへのアクセス
+テンプレートではJSのグローバルオブジェクトの中でも、一部のみにしかアクセスできない。
+
+ー　アクセス可能なグローバルオブジェクトのリスト
+GLOBALS_ALLOWEDのリストに含まれている
+https://github.com/vuejs/core/blob/main/packages/shared/src/globalsAllowList.ts#L3
+
+ー　リストへの追加
+app.config.globalPropertiesに追加する。
+
+
+
+🟡インポート、変数、関数の公開
+宣言されたトップレベルのインポート、変数、関数は、同じコンポーネントのテンプレートで公開しないと参照できない。
+
+<button @click="increment">
+  {{ count }}
+</button>
+
+import { ref } from 'vue'
+
+export default {
+  setup() {
+    const count = ref(0)
+
+    function increment() {
+      count.value++
+    }
+
+    // 変数・関数を公開
+    return {
+      count,
+      increment
+    }
+  }
+}
+
+
+
+🔵簡単に参照できるようにする
+setupを使用すると、公開しなくても自動的に使用可能になる。
+
+<script setup>
+import { ref } from 'vue'
+
+const count = ref(0)
+
+function increment() {
+  count.value++
+}
+</script>
+
+<template>
+  <button @click="increment">
+    {{ count }}
+  </button>
+</template>
+

@@ -1,0 +1,53 @@
+🟡DOM（Document Object Model）
+
+HTMLやXML文書の構造をプログラムが操作しやすい形で表現したもの。
+
+HTML文書がブラウザに読み込まれると、ブラウザはそのHTML文書を解釈してDOMツリーを構築する。
+⇒HTML文書の構造がDOMツリーに変換され、それぞれのHTML要素がノードとして表現される。
+⇒プログラム（JavaScriptなど）が文書の構造や要素にアクセスし、動的に変更できるようになる。
+
+(イメージ)
+
+HTML文書
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sample HTML</title>
+</head>
+<body>
+  <h1>Hello, World!</h1>
+  <p>This is a sample HTML document.</p>
+</body>
+</html>
+
+DOMツリーに変換すると...
+
+- Document
+  - html
+    - head
+      - meta
+      - meta
+      - title
+        - Text: "Sample HTML"
+    - body
+      - h1
+        - Text: "Hello, World!"
+      - p
+        - Text: "This is a sample HTML document."
+
+
+
+
+🔵ノード
+文書内の全ての要素、属性、テキストはノードと呼ばれる。
+
+🔵要素
+HTMLやXML文書内のタグ（例: <div>, <p>, <h1>）はDOMにおいて要素と呼ばれる。
+...要素はツリー構造内で親子関係を持ち、属性やテキストなどを含む。
+
+🔵属性
+HTML要素の追加情報
+例）<div id="example">のid
